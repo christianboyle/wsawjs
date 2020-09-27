@@ -31,7 +31,10 @@ const Sheet = require('./sheet');
 
   await page.waitForNavigation();
 
-  const USERNAMES = ['stevie_churchill', 'brandonbegin', 'reynoldsfiend'];
+  const sheet = new Sheet();
+  await sheet.load();
+
+  const USERNAMES = (await sheet.getRows(0)).map((row) => row.username);
 
   const profiles = [];
 
@@ -71,17 +74,14 @@ const Sheet = require('./sheet');
     profiles.push(profile);
   }
 
-  const sheet = new Sheet();
-  await sheet.load();
-
-  const oldProfiles = await sheet.getRows(0);
+  const oldProfiles = await sheet.getRows(1);
   for (let oldProfile of oldProfiles) {
     if (USERNAMES.includes(oldProfiles.username)) {
       await oldProfile.delete();
     }
   }
 
-  await sheet.addRows(profiles, 0);
+  await sheet.addRows(profiles, 1);
 
   await browser.close();
 })();
